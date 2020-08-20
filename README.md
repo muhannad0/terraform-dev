@@ -6,4 +6,4 @@ Referencing the book [Terraform: Up & Running](https://www.terraformupandrunning
 
 Completed Code | Commit
 ------------ | -------------
-Deploy a Single Server | 67bbe7e312e68963eac273950e762f79bbbe72bd
+Deploy a Single Server | [67bbe7e](https://github.com/muhannad0/terraform-dev/commit/67bbe7e312e68963eac273950e762f79bbbe72bd)
