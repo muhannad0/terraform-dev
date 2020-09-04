@@ -22,6 +22,7 @@ resource "aws_db_instance" "example" {
     username = "admin"
     # referring to secrets manager
     password = data.aws_secretsmanager_secret_version.db_password.secret_string
+    skip_final_snapshot = true
 }
 
 data "aws_secretsmanager_secret_version" "db_password" {
