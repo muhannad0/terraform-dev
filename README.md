@@ -12,3 +12,4 @@ Using shared TF state on S3 | [97f2433](https://github.com/muhannad0/terraform-d
 Isolation using TF workspaces | [e6778a7](https://github.com/muhannad0/terraform-dev/commit/e6778a7696dfc0eb63ed45394df0333204261d99)
 Isolation using File Layouts | [9115553](https://github.com/muhannad0/terraform-dev/commit/9115553865d0dfc5cc06ea1873dab7c3ad7d8295)
 Implementing Terraform Modules | [5cd8601](https://github.com/muhannad0/terraform-dev/commit/5cd8601710f1fe4a8f027a6662873ce0750697e4)
+Using Loops | [5d6b558](https://github.com/muhannad0/terraform-dev/commit/5d6b5582158fe59d3b652ee6fbda0018417b9117)
