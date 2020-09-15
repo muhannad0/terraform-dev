@@ -18,7 +18,7 @@ locals {
     any_ip = ["0.0.0.0/0"]
 }
 
-# Get the latest ami image; Amazon Linux 2
+# Get the latest ami image; Amazon Linux 2 Ref: ami-0c94855ba95c71c99
 data "aws_ami" "amzn2" {
     most_recent = true
 
@@ -47,21 +47,38 @@ data "aws_subnet_ids" "default" {
 
 # Get the User Data script
 data "template_file" "user_data" {
+    # count = var.enable_new_user_data ? 0 : 1
+
     template = file("${path.module}/user-data.sh")
 
     vars = {
         server_port = var.server_port
         db_address = data.terraform_remote_state.db.outputs.address
         db_port = data.terraform_remote_state.db.outputs.port
+        server_text = var.server_text
     }
 }
 
+# data "template_file" "user_data_new" {
+#     count = var.enable_new_user_data ? 1 : 0
+
+#     template = file("${path.module}/user-data-new.sh")
+
+#     vars = {
+#         server_port = var.server_port
+#     }
+# }
+
 resource "aws_launch_configuration" "example" {
-    image_id = data.aws_ami.amzn2.id
+    # image_id = data.aws_ami.amzn2.id
+    image_id = var.instance_ami
     instance_type = var.instance_type
     security_groups = [aws_security_group.instance.id]
 
+    # Check if template_file.user_data returns an array, then use that file, otherwise, use the new file.
+    # user_data = length(data.template_file.user_data[*]) > 0 ? data.template_file.user_data[0].rendered : data.template_file.user_data_new[0].rendered
     user_data = data.template_file.user_data.rendered
+
     # tags = {
     #     Name = "terraform-example"
     # }
@@ -71,6 +88,8 @@ resource "aws_launch_configuration" "example" {
 }
 
 resource "aws_autoscaling_group" "example" {
+    # Depend explicitly on specific cluster launch config name so that forces ASG to replaced along with new launch config
+    name = "${var.cluster_name}-${aws_launch_configuration.example.name}"
     launch_configuration = aws_launch_configuration.example.name
     vpc_zone_identifier = data.aws_subnet_ids.default.ids
 
@@ -79,7 +98,14 @@ resource "aws_autoscaling_group" "example" {
 
     min_size = var.min_size
     max_size = var.max_size
-    desired_capacity = 2
+
+    # Wait for at least this many instances to pass health check before considering ASG deploy sucessful
+    min_elb_capacity = var.min_size
+
+    # When replacing this ASG, create replacement first, then only delete the original
+    lifecycle {
+        create_before_destroy = true
+    }
 
     tag {
         key = "Name"
@@ -96,6 +122,28 @@ resource "aws_autoscaling_group" "example" {
             propagate_at_launch = true
         }
     }
+}
+
+resource "aws_autoscaling_schedule" "scale_out_during_business_hours" {
+    count = var.enable_autoscaling ? 1 : 0
+    scheduled_action_name = "scale-out-during-business-hours"
+    min_size = 2
+    max_size = 5
+    desired_capacity = 5
+    recurrence = "0 9 * * *"
+
+    autoscaling_group_name = aws_autoscaling_group.example.name
+}
+
+resource "aws_autoscaling_schedule" "scale_in_at_night" {
+    count = var.enable_autoscaling ? 1 : 0
+    scheduled_action_name = "scale-in-at-night"
+    min_size = 2
+    max_size = 5
+    desired_capacity = 2
+    recurrence = "0 17 * * *"
+
+    autoscaling_group_name = aws_autoscaling_group.example.name
 }
 
 resource "aws_lb" "example" {
@@ -202,4 +250,41 @@ resource "aws_security_group_rule" "allow_instance_all_outbound" {
     to_port = local.any_port
     protocol = local.any_protocol
     cidr_blocks = local.any_ip
+}
+
+resource "aws_cloudwatch_metric_alarm" "high_cpu_utilization" {
+    alarm_name = "${var.cluster_name}-high-cpu-utilization"
+    namespace = "AWS/EC2"
+    metric_name = "CPUUtilization"
+
+    dimensions = {
+        AutoScalingGroupName = aws_autoscaling_group.example.name
+    }
+
+    comparison_operator = "GreaterThanThreshold"
+    evaluation_periods = 1
+    period = 300
+    statistic = "Average"
+    threshold = 90
+    unit = "Percent"
+}
+
+resource "aws_cloudwatch_metric_alarm" "low_cpu_credit_balance" {
+    # Create only if instance type is 't'. %.1s extracts the first character from string.
+    count = format("%.1s", var.instance_type) == "t" ? 1 : 0
+
+    alarm_name = "${var.cluster_name}-low-cpu-credit-balance"
+    namespace = "AWS/EC2"
+    metric_name = "CPUCreditBalance"
+
+    dimensions = {
+        AutoScalingGroupName = aws_autoscaling_group.example.name
+    }
+
+    comparison_operator = "LessThanThreshold"
+    evaluation_periods = 1
+    period = 300
+    statistic = "Minimum"
+    threshold = 10
+    unit = "Count"
 }

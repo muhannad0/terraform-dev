@@ -5,8 +5,6 @@ wget https://www.busybox.net/downloads/binaries/1.31.0-defconfig-multiarch-musl/
 chmod +x busybox-x86_64
 mv busybox-x86_64 /usr/local/bin/busybox
 cat > index.html <<EOF
-<h1>${server_text}</h1>
-<p>DB Address: ${db_address}</p>
-<p>DB Port: ${db_port}</p>
+<h1>Hello World, v2</h1>
 EOF
 nohup busybox httpd -f -p ${server_port} &

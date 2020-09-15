@@ -40,3 +40,23 @@ variable "server_port" {
   default     = "8080"
   description = "The port the server will use for HTTP requests"
 }
+
+variable "enable_autoscaling" {
+  description = "If set to true, enable auto scaling"
+  type = bool
+}
+
+# variable "enable_new_user_data" {
+#   description = "If set to true, configure the new User Data script"
+#   type = bool
+# }
+
+variable "instance_ami" {
+  description = "The AMI to run in the webserver cluster"
+  type = string
+}
+
+variable "server_text" {
+  description = "The text to be displayed on the webserver"
+  type = string
+}
