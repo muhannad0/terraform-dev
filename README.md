@@ -13,4 +13,4 @@ Isolation using TF workspaces | [e6778a7](https://github.com/muhannad0/terraform
 Isolation using File Layouts | [9115553](https://github.com/muhannad0/terraform-dev/commit/9115553865d0dfc5cc06ea1873dab7c3ad7d8295)
 Implementing Terraform Modules | [5cd8601](https://github.com/muhannad0/terraform-dev/commit/5cd8601710f1fe4a8f027a6662873ce0750697e4)
 Using Loops | [5d6b558](https://github.com/muhannad0/terraform-dev/commit/5d6b5582158fe59d3b652ee6fbda0018417b9117)
-Using Conditions and Zero-Downtime Expressions | [0c6583d](https://github.com/muhannad0/terraform-dev/commit/0c6583d1e4ceb60071dbc8d2e4502d77811238ac)
+Using Conditional Expressions and Zero-Downtime Deployments | [0c6583d](https://github.com/muhannad0/terraform-dev/commit/0c6583d1e4ceb60071dbc8d2e4502d77811238ac)
