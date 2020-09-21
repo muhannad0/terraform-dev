@@ -10,7 +10,7 @@ provider "aws" {
 terraform {
     backend "s3" {
         bucket = "bucket-with-some-data-files"
-        key = "stage/services/webserver-cluster/terraform.tfstate"
+        key = "stage/services/hello-world-app/terraform.tfstate"
         region = "us-east-1"
 
         dynamodb_table = "tf-dev-locks"
