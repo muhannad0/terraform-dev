@@ -17,13 +17,14 @@ fi
 + A way to run manual tests for modules.
 + A way to run automated tests for modules.
 
-## Writing tests using Terratest
+## Using Terratest
 ### Setting up the `tests` folder
 ```bash
 go mod init <github>/<username>/<repo>/<folder-optional>
 go mod vendor # downloads the modules to vendor folder
 ```
 
-### Import the required modules in your test file
-+ User `_test.go` to define a test file.
+### Write the test file
++ Use `<module>_<example>_test.go` name to create a file.
++ Import the required modules and write the test.
 + Run `go test -v 30m`. 30m to make sure resources get created (override default Go execution timeout of 10m).
