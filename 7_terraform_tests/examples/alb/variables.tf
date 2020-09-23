@@ -1,4 +1,5 @@
-variable "cluster_name" {
-    description = "The name of the cluster the load balancer is part of"
+variable "alb_name" {
+    description = "The name of the load balancer"
     type = string
+    default = "example"
 }

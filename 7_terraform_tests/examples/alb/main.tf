@@ -10,7 +10,7 @@ provider "aws" {
 module "alb" {
     source = "../../modules/networking/alb"
 
-    alb_name = "${var.cluster_name}-alb"
+    alb_name = "${var.alb_name}-alb"
     subnet_ids = data.aws_subnet_ids.default.ids
 }
 
