@@ -10,12 +10,14 @@ import (
 )
 
 func TestAlbExample(t *testing.T) {
+	t.Parallel()
+	
 	opts := &terraform.Options{
 		// relative path to module example
 		TerraformDir: "../examples/alb",
 
 		Vars:map[string]interface{}{
-			"cluster_name": fmt.Sprintf("test-%s", random.UniqueId()),
+			"alb_name": fmt.Sprintf("test-%s", random.UniqueId()),
 		},
 	}	
 
