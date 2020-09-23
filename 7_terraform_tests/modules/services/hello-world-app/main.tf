@@ -3,27 +3,6 @@ terraform {
     required_version = ">= 0.12"
 }
 
-# Read data from data-stores state file
-data "terraform_remote_state" "db" {
-    backend = "s3"
-
-    config = {
-        bucket = var.db_remote_state_bucket
-        key = var.db_remote_state_key
-        region = "us-east-1"
-    }
-}
-
-# Select the default VPC
-data "aws_vpc" "default" {
-    default = true
-}
-
-# Get the subnets in the default VPC
-data "aws_subnet_ids" "default" {
-    vpc_id = data.aws_vpc.default.id
-}
-
 # Get the latest ami image; Amazon Linux 2 Ref: ami-0c94855ba95c71c99
 # data "aws_ami" "amzn2" {
 #     most_recent = true
@@ -43,34 +22,33 @@ data "aws_subnet_ids" "default" {
 
 # Get the User Data script
 data "template_file" "user_data" {
-    count = var.db_use_default_settings ? 0 : 1
     template = file("${path.module}/user-data.sh")
 
     vars = {
         server_text = var.server_text
         server_port = var.server_port
-        db_address = data.terraform_remote_state.db.outputs.address
-        db_port = data.terraform_remote_state.db.outputs.port
+        db_address = local.mysql_config.address
+        db_port = local.mysql_config.port
     }
 }
 
-data "template_file" "user_data_default" {
-    count = var.db_use_default_settings ? 1 : 0
-    template = file("${path.module}/user-data.sh")
+# data "template_file" "user_data_default" {
+#     count = var.db_use_default_settings ? 1 : 0
+#     template = file("${path.module}/user-data.sh")
 
-    vars = {
-        server_text = var.server_text
-        server_port = var.server_port
-        db_address = "localhost"
-        db_port = 3306
-    }
-}
+#     vars = {
+#         server_text = var.server_text
+#         server_port = var.server_port
+#         db_address = "localhost"
+#         db_port = 3306
+#     }
+# }
 
 resource "aws_lb_target_group" "asg" {
     name = "hello-world-${var.environment}"
     port = var.server_port
     protocol = "HTTP"
-    vpc_id = data.aws_vpc.default.id
+    vpc_id = local.vpc_id
 
     health_check {
         path = "/"
@@ -106,14 +84,14 @@ module "asg" {
     instance_ami = "ami-0c94855ba95c71c99"
     instance_type = var.instance_type
 
-    user_data = (length(data.template_file.user_data[*].rendered) > 0 ? data.template_file.user_data[0].rendered : data.template_file.user_data_default[0].rendered)
-    # user_data = data.template_file.user_data.rendered
+    # user_data = (length(data.template_file.user_data[*].rendered) > 0 ? data.template_file.user_data[0].rendered : data.template_file.user_data_default[0].rendered)
+    user_data = data.template_file.user_data.rendered
 
     min_size = var.min_size
     max_size = var.max_size
     enable_autoscaling = var.enable_autoscaling
     
-    subnet_ids = data.aws_subnet_ids.default.ids
+    subnet_ids = local.subnet_ids
     target_group_arns = [aws_lb_target_group.asg.arn]
     health_check_type = "ELB"
 
@@ -124,5 +102,5 @@ module "alb" {
     source = "../../networking/alb"
 
     alb_name = "hello-world-${var.environment}"
-    subnet_ids = data.aws_subnet_ids.default.ids
+    subnet_ids = local.subnet_ids
 }

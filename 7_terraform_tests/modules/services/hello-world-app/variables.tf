@@ -6,17 +6,34 @@ variable "environment" {
 variable "db_remote_state_bucket" {
     description = "The name of the S3 bucket for database remote state"
     type = string
+    default = null
 }
 
 variable "db_remote_state_key" {
     description = "The path for the database remote state key"
     type = string
+    default = null
 }
 
-variable "db_use_default_settings" {
-    description = "Enable to use default database address and port (localhost and 3306)"
-    type = bool
-    default = false
+variable "vpc_id" {
+    description = "The ID of the VPC to deploy to"
+    type = string
+    default = null
+}
+
+variable "subnet_ids" {
+    description = "The IDs of the subnets to deploy to"
+    type = list(string)
+    default = null
+}
+
+variable "mysql_config" {
+    description = "The configuration for MySQL database"
+    type = object({
+      address = string
+      port = number
+    })
+    default = null
 }
 
 variable "instance_type" {
