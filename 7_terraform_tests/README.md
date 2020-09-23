@@ -27,4 +27,9 @@ go mod vendor # downloads the modules to vendor folder
 ### Write the test file
 + Use `<module>_<example>_test.go` name to create a file.
 + Import the required modules and write the test.
-+ Run `go test -v 30m`. 30m to make sure resources get created (override default Go execution timeout of 10m).
++ Run `go test -v -timeout 30m`. 30m to make sure resources get created (override default Go execution timeout of 10m).
+
+## Tips to handle external dependencies
++ Create a separate file `dependencies.tf` so that users are aware of what are the external dependencies for the module.
++ Allow variable inputs to set these values with a `default = null` parameter. In resource definition have conditional check for `null` to decide whether query the external source for the data, or use the provided values.
++ Put the queried/provided values in a `locals` block (again using a conditional check for presence of `null`). Reference the local values in the module.
