@@ -14,13 +14,8 @@ module "mysql" {
     db_allocated_storage = 10
     db_identifier_prefix = "example-db-"
 
-    db_name = "example_db"
-    db_admin_username = "admin"
-    # Asn example of retrieving password from AWS Secrets Manager
-    db_admin_password = data.aws_secretsmanager_secret_version.db_password.secret_string
+    db_name = var.db_name
+    db_admin_username = var.db_username
+    db_admin_password = var.db_password
 
-}
-
-data "aws_secretsmanager_secret_version" "db_password" {
-    secret_id = "mysql-master-password-stage"
 }
