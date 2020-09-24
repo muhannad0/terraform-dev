@@ -18,4 +18,6 @@ module "hello_world_app" {
     min_size = 1
     max_size = 2
     enable_autoscaling = false
+
+    server_text = var.server_text
 }

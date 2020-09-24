@@ -66,7 +66,6 @@ variable "custom_tags" {
 variable "server_text" {
     description = "The text to display on the webpage"
     type = string
-    default = "Hello World Default"
 }
 
 variable "server_port" {
