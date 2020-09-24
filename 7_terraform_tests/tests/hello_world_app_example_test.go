@@ -41,7 +41,7 @@ func TestHelloWorldAppExample (t *testing.T) {
 		maxRetries,
 		timeBetweenRetries,
 		func(status int, body string) bool {
-			return status == 200 && strings.Contains(body, "Hello World Default")
+			return status == 200 && strings.Contains(body, "Hello World Example")
 		},
 	)
 }
