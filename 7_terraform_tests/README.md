@@ -33,3 +33,11 @@ go mod vendor # downloads the modules to vendor folder
 + Create a separate file `dependencies.tf` so that users are aware of what are the external dependencies for the module.
 + Allow variable inputs to set these values with a `default = null` parameter. In resource definition have conditional check for `null` to decide whether query the external source for the data, or use the provided values.
 + Put the queried/provided values in a `locals` block (again using a conditional check for presence of `null`). Reference the local values in the module.
+
+## Tips to handle a hard-coded remote backend
++ Use a partial configuration for the S3 remote state backend.
+    + Leave the backend configuration empty in `main.tf`.
+    + Create a `backend.hcl` file with the configuration values.
+    + Use `terraform init -backend-config=backend.hcl` when deploying.
+    + Pass in backend configuration values in your test as required.
++ TODO: Figure out how to cleanup the S3 test folder after running tests.
