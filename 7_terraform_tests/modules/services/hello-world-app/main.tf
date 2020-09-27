@@ -59,6 +59,8 @@ resource "aws_lb_target_group" "asg" {
         healthy_threshold = 2
         unhealthy_threshold = 2
     }
+
+    deregistration_delay = 60
 }
 
 resource "aws_lb_listener_rule" "asg" {
