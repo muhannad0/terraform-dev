@@ -36,5 +36,5 @@ module "hello_world_app" {
         DeployedBy = "TeamTF"
     }
 
-    server_text = "Hello World Prod"
+    server_text = var.server_text
 }

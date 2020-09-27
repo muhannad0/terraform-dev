@@ -9,12 +9,6 @@ provider "aws" {
 
 terraform {
     backend "s3" {
-        bucket = "bucket-with-some-data-files"
-        key = "prod/data-stores/mysql/terraform.tfstate"
-        region = "us-east-1"
-
-        dynamodb_table = "tf-dev-locks"
-        encrypt = true
     }
 }
 
@@ -23,10 +17,10 @@ module "mysql" {
 
     db_instance_class = "db.t2.micro"
     db_allocated_storage = 10
-    db_identifier_prefix = "hello-world-prod-db-"
+    db_identifier_prefix = "hello-world-prod"
 
-    db_name = "example_db"
-    db_admin_username = "admin"
+    db_name = var.db_name
+    db_admin_username = var.db_username
     db_admin_password = data.aws_secretsmanager_secret_version.db_password.secret_string
 
 }

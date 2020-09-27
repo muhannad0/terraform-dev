@@ -14,6 +14,10 @@ import (
 const dbDirStage = "../live/stage/data-stores/mysql"
 const appDirStage = "../live/stage/services/hello-world-app"
 
+// test for prod
+const dbDirProd = "../live/prod/data-stores/mysql"
+const appDirProd = "../live/prod/services/hello-world-app"
+
 func TestHelloWorldAppStage(t *testing.T) {
 	t.Parallel()
 	
@@ -65,6 +69,7 @@ func createHelloOpts(
 			"db_remote_state_bucket": dbOpts.BackendConfig["bucket"],
 			"db_remote_state_key": dbOpts.BackendConfig["key"],
 			"environment": dbOpts.Vars["db_name"],
+			"server_text": "Hello World Test",
 		},
 
 		// handling known errors like timeouts
@@ -91,7 +96,7 @@ func validateHelloApp(t *testing.T, helloOpts *terraform.Options) {
 		timeBetweenRetries,
 		func(status int, body string) bool {
 			return status == 200 &&
-				strings.Contains(body, "Hello World Stage")
+				strings.Contains(body, "Hello World Test")
 		},
 	)
 }
@@ -140,11 +145,6 @@ func deployApp(t *testing.T, dbDir string, helloAppDir string) {
 	terraform.InitAndApply(t, helloOpts)
 }
 
-// func redeployApp(t *testing.T, helloAppDir string) {
-// 	helloOpts := test_structure.LoadTerraformOptions(t, helloAppDir)
-// 	terraform.InitAndApply(t, helloOpts)
-// }
-
 func tearDownApp(t *testing.T, helloAppDir string) {
 	helloOpts := test_structure.LoadTerraformOptions(t, helloAppDir)
 	defer terraform.Destroy(t, helloOpts)
@@ -172,7 +172,7 @@ func redeployApp(t *testing.T, helloAppDir string) {
 	)
 
 	// update the server text and redploy
-	newServerText := "Hello World New Text"
+	newServerText := "Hello World New Test Text"
 	helloOpts.Vars["server_text"] = newServerText
 	terraform.Apply(t, helloOpts)
 
@@ -194,4 +194,24 @@ func redeployApp(t *testing.T, helloAppDir string) {
 	// stop checking
 	stopChecking <- true
 	waitGroup.Wait()
+}
+
+func TestHelloWorldAppProdWithStages(t *testing.T) {
+	t.Parallel()
+
+	prod := test_structure.RunTestStage
+	
+	// deploy MySQL Db
+	defer prod(t, "teardown_db", func() { tearDownDb(t, dbDirProd)})
+	prod(t, "deploy_db", func() { deployDb(t, dbDirProd) })
+
+	// deploy Hello World App
+	defer prod(t, "teardown_app", func() { tearDownApp(t, appDirProd) })
+	prod(t, "deploy_app", func() { deployApp(t, dbDirProd, appDirProd) })
+
+	// validate Hello World App
+	prod(t, "validate_app", func() { validateApp(t, appDirProd) })
+
+	// Redeploy Hello World App
+	prod(t, "redeploy_app", func() { redeployApp(t, appDirProd) })
 }
