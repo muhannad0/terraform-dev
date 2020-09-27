@@ -41,3 +41,8 @@ go mod vendor # downloads the modules to vendor folder
     + Use `terraform init -backend-config=backend.hcl` when deploying.
     + Pass in backend configuration values in your test as required.
 + TODO: Figure out how to cleanup the S3 test folder after running tests.
+
+## Using Test Structure package
++ Useful package in Terratest to allow execution of various parts of the test. For example: deploy db, deploy app, teardown db, teardown app.
++ This allows us to to quickly develop and run tests on a specific module while keeping other parts of the infrastructure intact during integration tests.
++ Important to save and read the stage related information as needed using the `test_structure.SaveTerraformOptions()` and `test_structure.LoadTerraformOptions()` methods.
