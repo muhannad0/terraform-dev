@@ -27,7 +27,8 @@ go mod vendor # downloads the modules to vendor folder
 ### Write the test file
 + Use `<module>_<example>_test.go` name to create a file.
 + Import the required modules and write the test.
-+ Run `go test -v -timeout 30m`. 30m to make sure resources get created (override default Go execution timeout of 10m).
++ Run `go test -timeout 30m`. 30m to make sure resources get created (override default Go execution timeout of 10m).
++ You can run specific test function using `go test -timeout 30m -run 'TestHelloAppStage'`.
 
 ## Tips to handle external dependencies
 + Create a separate file `dependencies.tf` so that users are aware of what are the external dependencies for the module.
@@ -38,7 +39,7 @@ go mod vendor # downloads the modules to vendor folder
 + Use a partial configuration for the S3 remote state backend.
     + Leave the backend configuration empty in `main.tf`.
     + Create a `backend.hcl` file with the configuration values.
-    + Use `terraform init -backend-config=backend.hcl` when deploying.
+    + Use `terraform init -backend-config=backend.hcl` when deploying using CLI.
     + Pass in backend configuration values in your test as required.
 + TODO: Figure out how to cleanup the S3 test folder after running tests.
 
