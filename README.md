@@ -15,3 +15,4 @@ Implementing Terraform Modules | [5cd8601](https://github.com/muhannad0/terrafor
 Using Loops | [5d6b558](https://github.com/muhannad0/terraform-dev/commit/5d6b5582158fe59d3b652ee6fbda0018417b9117)
 Using Conditional Expressions and Zero-Downtime Deployments | [0c6583d](https://github.com/muhannad0/terraform-dev/commit/0c6583d1e4ceb60071dbc8d2e4502d77811238ac)
 Production-Grade Infrastructure | [3f9e564](https://github.com/muhannad0/terraform-dev/commit/3f9e564b60f6027f27b0853f3773d41d1aaa3eba)
+Testing Infra-As-Code using Terratest | [c877554](https://github.com/muhannad0/terraform-dev/commit/c877554da4c8a68650d46a46c10531fb09860d49)
