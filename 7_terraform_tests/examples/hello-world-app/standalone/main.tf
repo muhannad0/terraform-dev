@@ -8,7 +8,7 @@ provider "aws" {
 }
 
 module "hello_world_app" {
-    source = "../../modules/services/hello-world-app"
+    source = "../../../modules/services/hello-world-app"
     
     environment = var.environment
 
